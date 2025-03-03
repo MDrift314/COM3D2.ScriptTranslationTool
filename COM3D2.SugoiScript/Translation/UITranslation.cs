@@ -112,6 +112,8 @@ namespace COM3D2.ScriptTranslationTool
                             Tools.WriteLine($"This line returned a faulty translation and was placed in {Program.errorFile}", ConsoleColor.Red);
                             continue;
                         }
+                        
+                        Cache.AddToMachineCache(currentLine);
                     }
                     else if (string.IsNullOrEmpty(currentLine.English))
                     {
