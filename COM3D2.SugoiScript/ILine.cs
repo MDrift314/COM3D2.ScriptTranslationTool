@@ -236,9 +236,10 @@ namespace COM3D2.ScriptTranslationTool
             Type = values[1];
             Description = values[2];
             Japanese = values[3];
-            OfficialTranslation = values[4];
             if (Cache.scriptCache.ContainsKey(Japanese.Trim())) 
                 ManualTranslation = Cache.scriptCache[Japanese.Trim()].ManualTranslation;
+                MachineTranslation = Cache.scriptCache[Japanese.Trim()].MachineTranslation;
+                OfficialTranslation = Cache.scriptCache[Japanese.Trim()].OfficialTranslation;
 
 
             /* I consider that if the Key contains |info / |name then the entry must be translated,

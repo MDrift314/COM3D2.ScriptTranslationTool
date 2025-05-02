@@ -8,6 +8,7 @@ using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Bson;
 using MessagePack;
 using ZstdSharp;
+using System.Globalization;
 
 namespace COM3D2.ScriptTranslationTool
 {
@@ -83,6 +84,40 @@ namespace COM3D2.ScriptTranslationTool
             return dict;
         }
 
+        internal static Dictionary<string, string> LoadFromCSVFile(string file)
+        {
+
+            Dictionary<string, string> dict = new Dictionary<string, string>();
+
+            if (File.Exists(file))
+            {
+                //double total = rawText.Length;
+                //double count = 0;
+
+                using (var csvReader = new StringReader(file))
+                using (var parser = new NotVisualBasic.FileIO.CsvTextFieldParser(csvReader))
+                {
+		            while (!parser.EndOfData)
+		            {
+			            string[] fields = parser.ReadFields();
+                        string key = fields[3];
+                        string value = fields[4];
+			            if (!dict.ContainsKey(key))
+                        {
+                            dict[key] = value;
+                         }
+                        }
+                }
+
+                    //if (progress)
+                   // {
+                  //      Tools.ShowProgress(count, total);
+                    //}
+                }
+
+            return dict;
+            }
+        
         internal static void LoadOfficialCache(ref int officialCount)
         {
             if (File.Exists(Program.officialCacheFile))
@@ -188,7 +223,8 @@ namespace COM3D2.ScriptTranslationTool
         internal static void BuildOfficial()
         {
             string[] files = Directory.GetFiles(Program.englishScriptFolder, "*.*", SearchOption.AllDirectories).Where(f => Path.GetExtension(f) == ".txt").ToArray();
-            double total = files.Length;
+            string[] csvFiles = Directory.GetFiles(Program.englishUIFolder, "*.*", SearchOption.AllDirectories).Where(f => Path.GetExtension(f) == ".csv").ToArray();
+            double total = files.Length + csvFiles.Length;
             double count = 0;
 
             //Skip if not script found
@@ -198,13 +234,35 @@ namespace COM3D2.ScriptTranslationTool
                 Program.OptionMenu();
             }
 
-            Console.Write($"Building official cache from {total} Scripts:     ");
+            Console.Write($"Building official cache from {total} Files:     ");
 
 
             // listing all english translated lines from the official scritps and save as .txt cache
             foreach (string file in files)
             {
                 Dictionary<string, string> fileContent = LoadFromFile(file);
+
+                foreach (KeyValuePair<string, string> entry in fileContent)
+                {
+                    if (!scriptCache.ContainsKey(entry.Key))
+                    {
+                        ScriptLine scriptLine = new ScriptLine(file, entry.Key, entry.Value);
+
+                        //add that line to the cache
+                        scriptCache.Add(entry.Key, scriptLine);
+
+                        //add that line to the .txt cache
+                        string str = Tools.FormatLine(entry.Key, entry.Value);
+                        File.AppendAllText(Program.officialCacheFile, str);
+                    }
+                }
+                count++;
+                Tools.ShowProgress(count, total);
+            }
+            // listing all english translated lines from the official  and save as .csv cache
+            foreach (string file in csvFiles)
+            {
+                Dictionary<string, string> fileContent = LoadFromCSVFile(file);
 
                 foreach (KeyValuePair<string, string> entry in fileContent)
                 {

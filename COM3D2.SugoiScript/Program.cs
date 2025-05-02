@@ -23,6 +23,7 @@ namespace COM3D2.ScriptTranslationTool
         internal static string englishScriptFolder = @"Scripts\English";
         internal static string translatedScriptFolder = @"Scripts\AlreadyTranslated";
         internal static string japaneseUIFolder = @"UI\Japanese";
+        internal static string englishUIFolder = @"UI\English";
         internal static string i18nExScriptFolder = @"Scripts\i18nEx\English\Script";
         internal static string i18nExUIFolder = @"UI\i18nEx\English\UI";
 
@@ -53,6 +54,7 @@ namespace COM3D2.ScriptTranslationTool
             Tools.MakeFolder(japaneseScriptFolder);
             Tools.MakeFolder(cacheFolder);
             Tools.MakeFolder(japaneseUIFolder);
+            Tools.MakeFolder(englishUIFolder);
             Tools.MakeFolder(archistoryFolder);
 
             if (moveFinishedRawScript)

@@ -12,37 +12,37 @@ namespace COM3D2.ScriptTranslationTool
     {
         internal static void Process()
         {
-            Dictionary<string, string[]> tempTermCache = new Dictionary<string, string[]>();
+            //Dictionary<string, string[]> tempTermCache = new Dictionary<string, string[]>();
 
-            //trying to load official .json
-            string[] jsonFiles =
-            {
-                "dynamic.json",
-                "dance_subtitle.json",
-                "parts.json",
-                "yotogi.json"
-            };
+        //     //trying to load official .json
+        //     string[] jsonFiles =
+        //     {
+        //         "dynamic.json",
+        //         "dance_subtitle.json",
+        //         "parts.json",
+        //         "yotogi.json"
+        //     };
 
-            foreach (string jsonFile in jsonFiles)
-            {
-                string jsonPath = Path.Combine(Program.cacheFolder, jsonFile);
+        //     foreach (string jsonFile in jsonFiles)
+        //     {
+        //         string jsonPath = Path.Combine(Program.cacheFolder, jsonFile);
 
-                if (!File.Exists(jsonPath)) continue;
+        //         if (!File.Exists(jsonPath)) continue;
 
-                string jsonData = File.ReadAllText(jsonPath);
+        //         string jsonData = File.ReadAllText(jsonPath);
 
-                var jsonSerializerSettings = new JsonSerializerSettings();
-                jsonSerializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
+        //         var jsonSerializerSettings = new JsonSerializerSettings();
+        //         jsonSerializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
 
-                var translationsTerms = JsonConvert.DeserializeObject<TermDatas>(jsonData, jsonSerializerSettings);
+        //         var translationsTerms = JsonConvert.DeserializeObject<TermDatas>(jsonData, jsonSerializerSettings);
 
-                Console.WriteLine($"{jsonFile} contains {translationsTerms.mTerms.Count} terms.");
+        //         Console.WriteLine($"{jsonFile} contains {translationsTerms.mTerms.Count} terms.");
 
-                foreach ( var termData in translationsTerms.mTerms )
-                {
-                    if (!tempTermCache.ContainsKey(termData.Term))
-                        tempTermCache.Add(termData.Term, termData.Languages);
-                }
+        //         foreach ( var termData in translationsTerms.mTerms )
+        //         {
+        //             if (!tempTermCache.ContainsKey(termData.Term))
+        //                 tempTermCache.Add(termData.Term, termData.Languages);
+        //         }
                 
                 /*                if (File.Exists(jsonPath) && !Program.isSafeExport)
                                     {
@@ -62,7 +62,7 @@ namespace COM3D2.ScriptTranslationTool
                                             }
                                         }
                                     }*/
-            }
+            //}
 
             Tools.MakeFolder(Program.i18nExUIFolder);
             IEnumerable<string> csvs = Directory.EnumerateFiles(Program.japaneseUIFolder, "*.csv*", SearchOption.AllDirectories);
@@ -82,19 +82,19 @@ namespace COM3D2.ScriptTranslationTool
 
                     var currentLine = csvLines[i];
 
+                    //Old retrieve from Cache
+                    //string category = Path.GetFileNameWithoutExtension(csv);
+                    //string key = currentLine.Key;
+                    //string term = $"{category}/{key}";
+                    //if (tempTermCache.ContainsKey(term))
+                    //{
+                    //    currentLine.OfficialTranslation = tempTermCache[term][1];
+                    //    currentLine.Color = ConsoleColor.Green;
+                   // }
+                                           
                     //Some entries may be empty...
                     if (String.IsNullOrWhiteSpace(currentLine.Japanese))
                         continue;
-
-                    //retrieve from Cache
-                    string category = Path.GetFileNameWithoutExtension(csv);
-                    string key = currentLine.Key;
-                    string term = $"{category}/{key}";
-                    if (tempTermCache.ContainsKey(term))
-                    {
-                        currentLine.OfficialTranslation = tempTermCache[term][1];
-                        currentLine.Color = ConsoleColor.Green;
-                    }
 
                     Console.Write(currentLine.Japanese);
                     Tools.Write(" => ", ConsoleColor.Yellow);
@@ -111,6 +111,9 @@ namespace COM3D2.ScriptTranslationTool
                             Tools.WriteLine($"This line returned a faulty translation and was placed in {Program.errorFile}", ConsoleColor.Red);
                             continue;
                         }
+
+                    Cache.AddToMachineCache(currentLine);
+
                     }
                     else if (string.IsNullOrEmpty(currentLine.English))
                     {
