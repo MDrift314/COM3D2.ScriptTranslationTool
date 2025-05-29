@@ -141,6 +141,8 @@ namespace COM3D2.ScriptTranslationTool
                 List<string> lines = new List<string>();
                 foreach(CsvLine line in csvLines)
                 {
+                    if (string.IsNullOrEmpty(line.Japanese) || string.IsNullOrEmpty(line.English))
+                    continue;
                     lines.Add(line.ExportLine());
                 }
 

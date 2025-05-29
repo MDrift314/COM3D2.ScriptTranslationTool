@@ -4,6 +4,8 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using Newtonsoft.Json;
 using System.IO;
+using System.Diagnostics.Eventing.Reader;
+using System.Runtime.InteropServices;
 
 namespace COM3D2.ScriptTranslationTool
 {
@@ -235,11 +237,23 @@ namespace COM3D2.ScriptTranslationTool
             Key = values[0];
             Type = values[1];
             Description = values[2];
-            Japanese = values[3];
-            if (Cache.scriptCache.ContainsKey(Japanese.Trim())) 
-                ManualTranslation = Cache.scriptCache[Japanese.Trim()].ManualTranslation;
-                MachineTranslation = Cache.scriptCache[Japanese.Trim()].MachineTranslation;
-                OfficialTranslation = Cache.scriptCache[Japanese.Trim()].OfficialTranslation;
+            Japanese = values[3].Trim();
+            
+            if (Cache.scriptCache.ContainsKey(this.Japanese.Trim()))
+            { 
+                if (!string.IsNullOrEmpty((Cache.scriptCache[this.Japanese]).OfficialTranslation))
+                    OfficialTranslation = (Cache.scriptCache[this.Japanese]).OfficialTranslation.Trim();
+                else
+                    OfficialTranslation = "";
+                if (!string.IsNullOrEmpty((Cache.scriptCache[this.Japanese]).ManualTranslation))
+                    ManualTranslation = (Cache.scriptCache[this.Japanese]).ManualTranslation.Trim();
+                else
+                    ManualTranslation = "";
+                if (!string.IsNullOrEmpty((Cache.scriptCache[this.Japanese]).MachineTranslation))
+                    MachineTranslation = (Cache.scriptCache[this.Japanese]).MachineTranslation.Trim();
+                else
+                    MachineTranslation = "";
+            }
 
 
             /* I consider that if the Key contains |info / |name then the entry must be translated,

@@ -91,29 +91,26 @@ namespace COM3D2.ScriptTranslationTool
 
             if (File.Exists(file))
             {
-                //double total = rawText.Length;
-                //double count = 0;
-
-                using (var csvReader = new StringReader(file))
+                string csvInput = File.ReadAllText(file);
+                using (var csvReader = new StringReader(csvInput))
                 using (var parser = new NotVisualBasic.FileIO.CsvTextFieldParser(csvReader))
                 {
-		            while (!parser.EndOfData)
+                    string[] headerFields = parser.ReadFields();
+                    while (!parser.EndOfData)
 		            {
-			            string[] fields = parser.ReadFields();
+                        string[] fields = parser.ReadFields();
                         string key = fields[3];
                         string value = fields[4];
-			            if (!dict.ContainsKey(key))
-                        {
-                            dict[key] = value;
-                         }
-                        }
-                }
+                        if (!dict.ContainsKey(key))
+                            {
+                                dict[key] = value;
 
-                    //if (progress)
-                   // {
-                  //      Tools.ShowProgress(count, total);
-                    //}
+                            }
+                    }
+                    
                 }
+               
+            }
 
             return dict;
             }
@@ -228,7 +225,7 @@ namespace COM3D2.ScriptTranslationTool
             double count = 0;
 
             //Skip if not script found
-            if (files.Length == 0)
+            if (files.Length == 0 & csvFiles.Length ==0)
             {
                 Tools.WriteLine($"No script found in: {Program.englishScriptFolder}", ConsoleColor.Red);
                 Program.OptionMenu();
@@ -237,7 +234,7 @@ namespace COM3D2.ScriptTranslationTool
             Console.Write($"Building official cache from {total} Files:     ");
 
 
-            // listing all english translated lines from the official scritps and save as .txt cache
+            // listing all english translated lines from the official scripts and save as .txt cache
             foreach (string file in files)
             {
                 Dictionary<string, string> fileContent = LoadFromFile(file);
@@ -259,7 +256,7 @@ namespace COM3D2.ScriptTranslationTool
                 count++;
                 Tools.ShowProgress(count, total);
             }
-            // listing all english translated lines from the official  and save as .csv cache
+            // listing all english translated lines from the English csv folder and adding to .txt cache
             foreach (string file in csvFiles)
             {
                 Dictionary<string, string> fileContent = LoadFromCSVFile(file);
